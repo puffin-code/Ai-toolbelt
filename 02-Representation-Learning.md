@@ -16,7 +16,7 @@ Status: **introduced**; components recalled, mechanism needs consolidation.
 - **What this means:** A student predicts a teacher's representation of another augmented view without explicit negatives. The teacher receives no gradient updates and follows a moving average of student weights. The student has an additional predictor; both networks can start from identical random weights.
 - **When it can be used:** Learning representations from unlabelled images for downstream tasks.
 - **Pitfalls:** A slowly changing teacher alone does not guarantee avoidance of collapse; the full training design matters. Usually use encoder embeddings downstream and discard pretraining projection/prediction heads.
-- **Tools / methods using it:** [BYOL reference implementation](https://github.com/google-deepmind/deepmind-research/tree/master/byol). DINO is related through teacher–student training, but its distinct objective and collapse controls remain to be studied.
+- **Tools / methods using it:** [BYOL reference implementation](https://github.com/google-deepmind/deepmind-research/tree/master/byol). DINO is related through teacher–student training; see the introductory notes below.
 
 ## Augmentation and invariance
 Status: **can explain**; applied to a hypothetical stain example.
@@ -33,3 +33,13 @@ Status: **can explain** the evaluation distinction.
 - **When it can be used:** Assessing pretrained representations with a simple downstream model before adding complexity.
 - **Pitfalls:** Weak linear performance does not prove information is absent. Keep data splits and evaluation comparable. A slide transformer seeing many tiles has different information from a classifier seeing one tile.
 - **Tools / methods using it:** SimCLR and BYOL use linear evaluation of pretrained representations; see their reference implementations above.
+
+## DINO
+Status: **introduced**; centering versus sharpening needs retrieval practice.
+
+- **What this means:** A student matches a momentum teacher's output distributions across augmented views, without explicit negatives. Centering counteracts dominant output categories; sharpening discourages flat predictions. These learned categories are not supplied tumour labels.
+- **When it can be used:** Pretraining image encoders on unlabelled images for downstream grouping or prediction, such as learning histology tile embeddings.
+- **Pitfalls:** Confident predictions can still collapse. Noncollapsed embeddings may encode technical variation. Test biological usefulness with relevant labels, linear probes and suitable held-out data. Labels, biological pairings and augmentation choices can guide learning toward biology; avoiding collapse alone cannot.
+- **Tools / methods using it:** [Original DINO](https://github.com/facebookresearch/dino); [DINOv2](https://github.com/facebookresearch/dinov2) builds on this approach with additional objectives and training changes.
+
+Source: [Original DINO paper](https://arxiv.org/abs/2104.14294), especially Sections 3.1 and 5.3. DINOv2's differences have not yet been studied in our sessions.
