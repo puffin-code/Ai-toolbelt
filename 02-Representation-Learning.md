@@ -43,3 +43,17 @@ Status: **introduced**; centering versus sharpening needs retrieval practice.
 - **Tools / methods using it:** [Original DINO](https://github.com/facebookresearch/dino); [DINOv2](https://github.com/facebookresearch/dinov2) builds on this approach with additional objectives and training changes.
 
 Source: [Original DINO paper](https://arxiv.org/abs/2104.14294), especially Sections 3.1 and 5.3. DINOv2's differences have not yet been studied in our sessions.
+
+## Masked autoencoders (MAE)
+Session: 2026-11-04. Status: **introduced; can explain the core intuition**.
+
+- **What this means:** Hide random image patches and train an encoder–decoder to reconstruct their pixels. The encoder processes only visible patches with positional information; the decoder receives their representations and placeholders for missing positions. Reconstruction loss is measured on hidden patches. Afterwards, use the encoder for downstream tasks and usually discard the decoder.
+- **When it can be used:** Pretraining image encoders without manual labels, including histology tile encoders. Missing content is predicted from visible context; original pixels supply the training targets.
+- **Pitfalls:** Random masking does not select the strongest signals. Too little masking permits local shortcuts; too much makes reconstruction ambiguous. Squared pixel error can favour averaging plausible completions, producing blur. Good reconstruction does not guarantee useful biological embeddings. Decoder capacity can affect what the encoder learns; knowledge in decoder weights is different from information accessible in an individual encoder embedding.
+- **Tools / methods using it:** [Original MAE](https://arxiv.org/abs/2111.06377); [PLUTO](https://arxiv.org/abs/2405.07905) combines MAE image reconstruction with DINO/iBOT and Fourier losses; [Prov-GigaPath](https://www.nature.com/articles/s41586-024-07441-w) uses masked autoencoding for its slide encoder over tile representations, while its tile encoder uses DINOv2; [scFoundation](https://www.nature.com/articles/s41592-024-02305-7), based on [xTrimoGene](https://arxiv.org/abs/2311.15156), adapts asymmetric masked reconstruction to gene-expression values.
+
+These examples reconstruct different targets: image pixels, tile representations or expression values. Standard image MAE does not automatically encode an entire whole slide. Model examples were identified, not studied in detail.
+
+**Retrieval question:** Why can hiding most patches encourage broader contextual learning, and why can excessive masking make reconstruction ambiguous?
+
+**Resume:** Compare reconstructing pixels with predicting learned representations, connecting MAE to iBOT. Decoder capacity versus downstream embedding usefulness remains a hypothesis to test, not a rule that smaller decoders are always better.
