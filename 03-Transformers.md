@@ -18,6 +18,15 @@ Status: **Can apply** to a hypothetical experiment.
 - **Pitfalls** — A gain from real coordinates establishes predictive value under the comparison. Identifying the specific biological pattern requires a separate test.
 - **Methods** — Shuffle the pairing between tile embeddings and coordinates within each slide. Train and evaluate with true versus shuffled coordinates using the same patient splits. Shuffling only at test time measures sensitivity to that disruption.
 
-**Retrieval question** — Why can a tile retain the highest score yet receive less attention when more tiles are added?
+## Attention matrices and local attention
 
-**Resume** — Follow one attention head through the shapes of Q, K, V and the score matrix, then connect that to why full attention can be expensive on whole slides.
+Status — **Can explain** the difference between pairwise scores and per-tile outputs, and how information travels through local attention layers.
+
+- **Meaning** — Start with the score matrix. Row `i` contains the scores for tile `i` attending to the available tiles. Q and K compute the scores. Row-wise softmax turns them into weights, and the weighted sum of the V vectors gives one output vector per row. With 2,000 tiles and 64 features per value vector, one head has a 2,000 × 2,000 score matrix and a 2,000 × 64 output. Doubling the tile count quadruples the full pairwise score count and doubles the number of output vectors.
+- **Uses** — Local attention limits each row to nearby tiles. Allowing 64 keys per tile gives up to 128,000 scores for 2,000 tiles, compared with 4 million for full attention.
+- **Pitfalls** — With fixed adjacency, each layer recomputes scores for the same allowed pairs using updated vectors. Information can travel one more hop per layer along those connections. If the same non-overlapping windows are used at every layer, information stays within each window.
+- **Methods** — Shift the windows between layers to let information cross the original boundaries. Hierarchical pooling can also connect windows when coarser groups span those boundaries.
+
+**Retrieval question** — If the tile count doubles, how do the number of full-attention scores and the number of output vectors change?
+
+**Resume** — Use the score matrix to compare what full attention, shifted windows and hierarchical pooling can capture on a whole slide.
